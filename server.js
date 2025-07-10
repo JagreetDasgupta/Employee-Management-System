@@ -21,9 +21,6 @@ connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
-
 // CORS for production
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -36,13 +33,8 @@ app.use((req, res, next) => {
   }
 });
 
-// Root route - serve HTML landing page
+// Simple root route
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// API info route
-app.get('/api', (req, res) => {
   res.json({
     message: 'Employee Management System API',
     version: '1.0.0',
@@ -53,7 +45,7 @@ app.get('/api', (req, res) => {
       audit: '/api/audit',
       health: '/health'
     },
-    documentation: 'Check the README.md for API documentation'
+    documentation: 'https://github.com/JagreetDasgupta/Employee-Management-System'
   });
 });
 
@@ -97,5 +89,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
-  console.log(`Landing page: http://localhost:${PORT}/`);
 }); 
