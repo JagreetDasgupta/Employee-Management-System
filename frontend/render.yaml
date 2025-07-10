@@ -1,7 +1,6 @@
 services:
-  - type: web
+  - type: static
     name: employee-management-frontend
-    env: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./build
     envVars:
