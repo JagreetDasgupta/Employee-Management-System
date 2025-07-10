@@ -6,13 +6,11 @@ const BASE_URL = 'https://employee-management-system-c5qp.onrender.com';
 const users = [
   {
     username: 'admin@admin.com',
-    email: 'admin@admin.com',
     password: 'admin',
     role: 'admin'
   },
   {
     username: 'hr@hr.com',
-    email: 'hr@hr.com',
     password: 'hr',
     role: 'hr'
   }
@@ -25,17 +23,16 @@ async function addLoginUsers() {
     try {
       const response = await axios.post(`${BASE_URL}/api/auth/register`, {
         username: user.username,
-        email: user.email,
         password: user.password,
         role: user.role
       });
       
-      console.log(`✅ Created user: ${user.email} (${user.role})`);
+      console.log(`✅ Created user: ${user.username} (${user.role})`);
     } catch (error) {
       if (error.response?.status === 409) {
-        console.log(`⚠️  User already exists: ${user.email}`);
+        console.log(`⚠️  User already exists: ${user.username}`);
       } else {
-        console.log(`❌ Error creating ${user.email}: ${error.response?.data?.message || error.message}`);
+        console.log(`❌ Error creating ${user.username}: ${error.response?.data?.message || error.message}`);
       }
     }
   }
