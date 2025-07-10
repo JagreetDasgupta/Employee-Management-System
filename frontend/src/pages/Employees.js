@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FaPlus, FaSearch, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
@@ -44,7 +45,7 @@ const Employees = () => {
       params.append('sortBy', sortBy);
       params.append('sortOrder', sortOrder);
 
-      const response = await fetch(`/api/employees?${params.toString()}`, {
+      const response = await fetch(`${API_ENDPOINTS.EMPLOYEES}?${params.toString()}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -70,7 +71,7 @@ const Employees = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
-        const response = await fetch(`/api/employees/${id}`, {
+        const response = await fetch(API_ENDPOINTS.EMPLOYEE_BY_ID(id), {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,
