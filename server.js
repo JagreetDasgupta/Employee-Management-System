@@ -14,9 +14,6 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Connect to MongoDB
-connectDB();
-
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -39,6 +36,8 @@ app.get('/', (req, res) => {
     message: 'Employee Management System API',
     version: '1.0.0',
     status: 'running',
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
     endpoints: {
       auth: '/api/auth',
       employees: '/api/employees',
@@ -59,7 +58,8 @@ app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -84,9 +84,47 @@ app.use('*', (req, res) => {
   });
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
+});
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
-}); 
+
+// Connect to database and start server
+const startServer = async () => {
+  try {
+    console.log('Connecting to MongoDB...');
+    await connectDB();
+    console.log('MongoDB connected successfully');
+    
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Health check: http://localhost:${PORT}/health`);
+      console.log(`API ready: http://localhost:${PORT}/`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Rejection:', err);
+  process.exit(1);
+});
+
+startServer(); 
