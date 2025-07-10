@@ -11,6 +11,7 @@ import {
   Plus
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -28,12 +29,12 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       // Get employee stats (total + active) first
-      const statsRes = await axios.get('/api/employees/stats');
+      const statsRes = await axios.get(`${API_ENDPOINTS.EMPLOYEES}/stats`);
       const { totalEmployees, activeEmployees } = statsRes.data;
 
       // Get a sample of employees (up to 3000) for department breakdown
-      const response = await axios.get('/api/employees?limit=3000');
-      const employees = response.data.data;
+      const response = await axios.get(`${API_ENDPOINTS.EMPLOYEES}?limit=3000`);
+      const employees = response.data.employees;
 
       // Calculate total salary from the sampled employees (approximate)
       const totalSalary = employees.reduce((sum, emp) => sum + emp.salary, 0);
