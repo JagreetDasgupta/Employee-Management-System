@@ -5,13 +5,13 @@ const BASE_URL = 'https://employee-management-system-c5qp.onrender.com';
 // Simple login credentials
 const users = [
   {
-    name: 'Admin',
+    username: 'admin@admin.com',
     email: 'admin@admin.com',
     password: 'admin',
     role: 'admin'
   },
   {
-    name: 'HR',
+    username: 'hr@hr.com',
     email: 'hr@hr.com',
     password: 'hr',
     role: 'hr'
@@ -24,7 +24,7 @@ async function addLoginUsers() {
   for (const user of users) {
     try {
       const response = await axios.post(`${BASE_URL}/api/auth/register`, {
-        name: user.name,
+        username: user.username,
         email: user.email,
         password: user.password,
         role: user.role
