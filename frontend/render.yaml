@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: employee-management-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://employee-management-system-c5qp.onrender.com 
