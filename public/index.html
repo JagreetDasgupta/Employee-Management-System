@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-right: 1rem;
+        }
+        
+        .get { background: #28a745; color: white; }
+        .post { background: #007bff; color: white; }
+        .put { background: #ffc107; color: black; }
+        .delete { background: #dc3545; color: white; }
+        
+        .status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .feature h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0.5rem;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 3rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Employee Management System</h1>
+            <p>A comprehensive REST API for managing employee data with authentication, analytics, and advanced features</p>
+            <div class="status">🟢 API Status: Running</div>
+        </div>
+        
+        <div class="card">
+            <h2>🚀 Quick Start</h2>
+            <p>This API provides comprehensive employee management functionality with JWT authentication, role-based access control, and advanced features.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <h3>🔐 Authentication</h3>
+                    <p>JWT-based secure authentication with role-based access control</p>
+                </div>
+                <div class="feature">
+                    <h3>👥 Employee CRUD</h3>
+                    <p>Complete Create, Read, Update, Delete operations for employees</p>
+                </div>
+                <div class="feature">
+                    <h3>🔍 Advanced Search</h3>
+                    <p>Filtering, pagination, sorting, and search capabilities</p>
+                </div>
+                <div class="feature">
+                    <h3>📊 Analytics</h3>
+                    <p>Department and salary analytics with detailed reports</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📚 API Endpoints</h2>
+            
+            <h3>Authentication</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <strong>/api/auth/register</strong> - Register new user
+            </div>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <strong>/api/auth/login</strong> - User login
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong>/api/auth/profile</strong> - Get user profile
+            </div>
+            
+            <h3>Employees</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong>/api/employees</strong> - Get all employees (with filtering)
+            </div>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <strong>/api/employees</strong> - Create new employee
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong>/api/employees/:id</strong> - Get employee by ID
+            </div>
+            <div class="endpoint">
+                <span class="method put">PUT</span>
+                <strong>/api/employees/:id</strong> - Update employee
+            </div>
+            <div class="endpoint">
+                <span class="method delete">DELETE</span>
+                <strong>/api/employees/:id</strong> - Delete employee
+            </div>
+            
+            <h3>Analytics</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong>/api/employees/analytics</strong> - General analytics
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong>/api/employees/analytics/departments</strong> - Department analytics
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong>/api/employees/analytics/salary</strong> - Salary analytics
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🛠️ Testing & Documentation</h2>
+            <p>Test the API using the provided tools and documentation:</p>
+            
+            <a href="/health" class="btn">Health Check</a>
+            <a href="https://github.com/JagreetDasgupta/Employee-Management-System" class="btn">GitHub Repository</a>
+            <a href="/api/employees" class="btn">Test API</a>
+        </div>
+        
+        <div class="footer">
+            <p>Built with Node.js, Express, MongoDB, and React</p>
+            <p>© 2024 Employee Management System</p>
+        </div>
+    </div>
+</body>
+</html> 
