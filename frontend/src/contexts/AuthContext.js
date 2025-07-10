@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const AuthContext = createContext();
 
@@ -31,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await axios.get('/api/auth/profile');
+          const response = await axios.get(API_ENDPOINTS.PROFILE);
           setUser(response.data.data);
         } catch (error) {
           console.error('Auth check failed:', error);
@@ -46,7 +47,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await axios.post('/api/auth/login', {
+      const response = await axios.post(API_ENDPOINTS.LOGIN, {
         username,
         password
       });
@@ -68,7 +69,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (username, password, role) => {
     try {
-      const response = await axios.post('/api/auth/register', {
+      const response = await axios.post(API_ENDPOINTS.REGISTER, {
         username,
         password,
         role
@@ -93,7 +94,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (userData) => {
     try {
-      const response = await axios.put('/api/auth/profile', userData);
+      const response = await axios.put(API_ENDPOINTS.PROFILE, userData);
       setUser(response.data.data);
       toast.success('Profile updated successfully!');
       return { success: true };
@@ -106,7 +107,7 @@ export const AuthProvider = ({ children }) => {
 
   const changePassword = async (currentPassword, newPassword) => {
     try {
-      await axios.put('/api/auth/change-password', {
+      await axios.put(`${API_ENDPOINTS.PROFILE}/change-password`, {
         currentPassword,
         newPassword
       });
@@ -130,7 +131,7 @@ export const AuthProvider = ({ children }) => {
     changePassword,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
-    isHR: user?.role === 'HR',
+    isHR: user?.role === 'hr',
     token
   };
 
