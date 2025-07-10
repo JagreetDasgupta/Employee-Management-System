@@ -2,30 +2,24 @@ import axios from 'axios';
 
 const BASE_URL = 'https://employee-management-system-c5qp.onrender.com';
 
-// Login credentials to add
+// Simple login credentials
 const users = [
   {
-    name: 'Admin User',
-    email: 'admin@company.com',
-    password: 'admin123',
+    name: 'Admin',
+    email: 'admin@admin.com',
+    password: 'admin',
     role: 'admin'
   },
   {
-    name: 'HR User',
-    email: 'hr@company.com',
-    password: 'hr123',
+    name: 'HR',
+    email: 'hr@hr.com',
+    password: 'hr',
     role: 'hr'
-  },
-  {
-    name: 'John Doe',
-    email: 'john.doe@company.com',
-    password: 'password123',
-    role: 'employee'
   }
 ];
 
 async function addLoginUsers() {
-  console.log('🚀 Adding login users to database...');
+  console.log('🚀 Adding admin and HR users to database...');
   
   for (const user of users) {
     try {
@@ -48,9 +42,8 @@ async function addLoginUsers() {
   
   console.log('\n🎉 Login users setup complete!');
   console.log('\n📋 Login Credentials:');
-  console.log('Admin: admin@company.com / admin123');
-  console.log('HR: hr@company.com / hr123');
-  console.log('Employee: john.doe@company.com / password123');
+  console.log('Admin: admin@admin.com / admin');
+  console.log('HR: hr@hr.com / hr');
 }
 
 // Run the function
