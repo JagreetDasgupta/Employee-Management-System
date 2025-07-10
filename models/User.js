@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
     minlength: [3, 'Username must be at least 3 characters long'],
-    maxlength: [30, 'Username cannot exceed 30 characters'],
-    match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores']
+    maxlength: [50, 'Username cannot exceed 50 characters'],
+    match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Username must be a valid email address']
   },
   password: {
     type: String,
@@ -22,10 +22,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Role is required'],
     enum: {
-      values: ['admin', 'HR'],
-      message: 'Role must be either admin or HR'
+      values: ['admin', 'hr'],
+      message: 'Role must be either admin or hr'
     },
-    default: 'HR'
+    default: 'hr'
   },
   status: {
     type: String,
