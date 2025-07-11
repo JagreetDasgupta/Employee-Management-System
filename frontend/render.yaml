@@ -8,5 +8,5 @@ services:
         value: https://employee-management-system-c5qp.onrender.com
     routes:
       - type: rewrite
-        source: /(.*)
+        source: /.*
         destination: /index.html 
