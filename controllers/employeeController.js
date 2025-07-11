@@ -63,52 +63,52 @@ export const createEmployee = async (req, res) => {
   
   return new Promise((resolve) => {
     auditMiddleware(req, res, async () => {
-      try {
-        // Validate input data
-        const validationErrors = validateEmployeeData(req.body);
-        if (validationErrors.length > 0) {
-          return res.status(400).json({
-            success: false,
-            message: 'Validation failed',
-            errors: validationErrors
-          });
-        }
+  try {
+    // Validate input data
+    const validationErrors = validateEmployeeData(req.body);
+    if (validationErrors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: validationErrors
+      });
+    }
 
-        // Check if employee with same employeeId already exists
-        const existingEmployee = await Employee.findOne({ employeeId: req.body.employeeId });
-        if (existingEmployee) {
-          return res.status(409).json({
-            success: false,
-            message: 'Employee with this Employee ID already exists'
-          });
-        }
+    // Check if employee with same employeeId already exists
+    const existingEmployee = await Employee.findOne({ employeeId: req.body.employeeId });
+    if (existingEmployee) {
+      return res.status(409).json({
+        success: false,
+        message: 'Employee with this Employee ID already exists'
+      });
+    }
 
-        // Check if employee with same email already exists
-        const existingEmail = await Employee.findOne({ email: req.body.email });
-        if (existingEmail) {
-          return res.status(409).json({
-            success: false,
-            message: 'Employee with this email already exists'
-          });
-        }
+    // Check if employee with same email already exists
+    const existingEmail = await Employee.findOne({ email: req.body.email });
+    if (existingEmail) {
+      return res.status(409).json({
+        success: false,
+        message: 'Employee with this email already exists'
+      });
+    }
 
-        // Create new employee
-        const employee = new Employee(req.body);
-        await employee.save();
+    // Create new employee
+    const employee = new Employee(req.body);
+    await employee.save();
 
-        res.status(201).json({
-          success: true,
-          message: 'Employee created successfully',
-          data: employee
-        });
-      } catch (error) {
-        console.error('Error creating employee:', error);
-        res.status(500).json({
-          success: false,
-          message: 'Internal server error',
-          error: error.message
-        });
-      }
+    res.status(201).json({
+      success: true,
+      message: 'Employee created successfully',
+      data: employee
+    });
+  } catch (error) {
+    console.error('Error creating employee:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
       resolve();
     });
   });

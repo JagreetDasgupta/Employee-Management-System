@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FaEdit, FaTrash, FaArrowLeft, FaEnvelope, FaPhone, FaBuilding, FaBriefcase, FaDollarSign, FaCalendar, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const EmployeeDetail = () => {
   const { id } = useParams();
@@ -19,7 +20,9 @@ const EmployeeDetail = () => {
   const fetchEmployee = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/employees/${id}`, {
+      const url = API_ENDPOINTS.EMPLOYEE_BY_ID(id);
+      console.log("Fetching employee with id:", id, "URL:", url); // Debug log
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -42,7 +45,7 @@ const EmployeeDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this employee? This action cannot be undone.')) {
       try {
-        const response = await fetch(`/api/employees/${id}`, {
+        const response = await fetch(API_ENDPOINTS.EMPLOYEE_BY_ID(id), {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,

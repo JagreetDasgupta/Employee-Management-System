@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaSave, FaTimes, FaUser, FaEnvelope, FaBuilding, FaBriefcase, FaDollarSign, FaCalendar, FaPhone } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const EmployeeForm = () => {
   const { id } = useParams();
@@ -53,7 +54,7 @@ const EmployeeForm = () => {
   const fetchEmployee = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/employees/${id}`, {
+      const response = await fetch(API_ENDPOINTS.EMPLOYEE_BY_ID(id), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -61,16 +62,17 @@ const EmployeeForm = () => {
       });
 
       if (response.ok) {
-        const employee = await response.json();
+        const result = await response.json();
+        const employee = result.data; // API returns { success: true, data: employee }
         setFormData({
           employeeId: employee.employeeId || '',
           name: employee.name || '',
           email: employee.email || '',
           phone: employee.phone || '',
           department: employee.department || '',
-          position: employee.position || '',
+          position: employee.designation || '', // API uses 'designation' not 'position'
           salary: employee.salary || '',
-          hireDate: employee.hireDate ? new Date(employee.hireDate).toISOString().split('T')[0] : '',
+          hireDate: employee.joiningDate ? new Date(employee.joiningDate).toISOString().split('T')[0] : '', // API uses 'joiningDate'
           status: employee.status || 'active',
           address: employee.address || '',
           emergencyContact: {
@@ -115,8 +117,8 @@ const EmployeeForm = () => {
 
     try {
       const url = id 
-        ? `/api/employees/${id}`
-        : '/api/employees';
+        ? API_ENDPOINTS.EMPLOYEE_BY_ID(id)
+        : API_ENDPOINTS.EMPLOYEES;
       
       const method = id ? 'PUT' : 'POST';
 
