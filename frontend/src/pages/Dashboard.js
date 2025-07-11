@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { API_ENDPOINTS } from '../config/api.js';
+import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -21,6 +22,7 @@ const Dashboard = () => {
     departments: []
   });
   const [loading, setLoading] = useState(true);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     fetchDashboardData();
@@ -28,50 +30,23 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Get employee stats (total + active) first
+      // Get employee stats (total + active)
       const statsRes = await axios.get(`${API_ENDPOINTS.EMPLOYEES}/stats`);
       const { totalEmployees, activeEmployees } = statsRes.data;
 
-      // Get a sample of employees (up to 3000) for department breakdown
-      const response = await axios.get(`${API_ENDPOINTS.EMPLOYEES}?limit=3000`);
-      const employees = response.data.employees;
+      // Get department analytics from backend
+      const analyticsRes = await axios.get(API_ENDPOINTS.ANALYTICS);
+      const departmentStats = analyticsRes.data.data?.departmentStats || [];
+      const salaryStats = analyticsRes.data.data?.salaryStats || {};
+      const totalSalary = salaryStats.totalSalary || 0;
 
-      // Calculate total salary from the sampled employees (approximate)
-      const totalSalary = employees.reduce((sum, emp) => sum + emp.salary, 0);
+      // Format departments for chart
+      const departments = departmentStats.map(d => ({
+        name: d._id,
+        count: d.count,
+        percentage: totalEmployees ? Math.round((d.count / totalEmployees) * 100) : 0
+      }));
 
-      // Robust department statistics using sampled employees
-      const ALL_DEPARTMENTS = [
-        "Engineering", "Marketing", "Sales", "HR", "Finance", "Operations", "Design", "Product"
-      ];
-      // Build a lookup for normalization
-      const deptLookup = {};
-      ALL_DEPARTMENTS.forEach(d => deptLookup[d.toLowerCase()] = d);
-      // Initialize counts
-      const deptCounts = {};
-      ALL_DEPARTMENTS.forEach(dept => { deptCounts[dept] = 0; });
-      let unknownCount = 0;
-      employees.forEach(emp => {
-        const raw = (emp.department || '').trim().toLowerCase();
-        if (deptLookup[raw]) {
-          deptCounts[deptLookup[raw]]++;
-        } else {
-          unknownCount++;
-        }
-      });
-      let departments = ALL_DEPARTMENTS
-        .map(dept => ({
-          name: dept,
-          count: deptCounts[dept],
-          percentage: employees.length ? Math.round((deptCounts[dept] / employees.length) * 100) : 0
-        }))
-        .filter(d => d.count > 0); // Only show departments with employees
-      if (unknownCount > 0) {
-        departments.push({
-          name: "Unknown",
-          count: unknownCount,
-          percentage: employees.length ? Math.round((unknownCount / employees.length) * 100) : 0
-        });
-      }
       setStats({
         totalEmployees,
         activeEmployees,
@@ -103,13 +78,15 @@ const Dashboard = () => {
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600">Overview of your employee management system</p>
         </div>
-        <Link
-          to="/employees/new"
-          className="btn-primary flex items-center"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Employee
-        </Link>
+        {isAdmin && (
+          <Link
+            to="/employees/new"
+            className="btn-primary flex items-center"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Employee
+          </Link>
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -198,10 +175,10 @@ const Dashboard = () => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Employees by Department</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.departments}>
+              <BarChart data={stats.departments} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis />
+                <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Bar dataKey="count" fill="#3B82F6" />
               </BarChart>

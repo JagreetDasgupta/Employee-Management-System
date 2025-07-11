@@ -14,7 +14,7 @@ const Employees = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
-  const { token, isAdmin } = useAuth();
+  const { token, isAdmin, user } = useAuth();
   const searchTimeout = useRef();
 
   const departments = [
@@ -208,11 +208,7 @@ const Employees = () => {
                     <span className="ml-1">{sortOrder === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
-                {isAdmin && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                )}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -247,30 +243,25 @@ const Employees = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     ${employee.salary.toLocaleString()}
                   </td>
-                  {isAdmin && (
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <Link
-                          to={`/employees/${employee._id}`}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          <FaEye />
-                        </Link>
-                        <Link
-                          to={`/employees/${employee._id}/edit`}
-                          className="text-green-600 hover:text-green-900"
-                        >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
+                    <Link to={`/employees/${employee._id}`} className="text-blue-600 hover:text-blue-900" title="View">
+                      <FaEye />
+                    </Link>
+                    {isAdmin && (
+                      <>
+                        <Link to={`/employees/${employee._id}/edit`} className="text-green-600 hover:text-green-900" title="Edit">
                           <FaEdit />
                         </Link>
                         <button
                           onClick={() => handleDelete(employee._id)}
                           className="text-red-600 hover:text-red-900"
+                          title="Delete"
                         >
                           <FaTrash />
                         </button>
-                      </div>
-                    </td>
-                  )}
+                      </>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
