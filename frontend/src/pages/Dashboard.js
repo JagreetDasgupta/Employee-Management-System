@@ -34,7 +34,7 @@ const Dashboard = () => {
 
       // Get salary analytics (total salary)
       const analyticsRes = await axios.get(`${API_ENDPOINTS.ANALYTICS}`);
-      const salaryStats = analyticsRes.data.data.salaryStats?.[0] || {};
+      const salaryStats = analyticsRes.data.data[0]?.salaryStats?.[0] || {};
       const totalSalary = salaryStats.totalSalary || 0;
 
       // Get department counts
