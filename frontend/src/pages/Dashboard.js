@@ -28,50 +28,25 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Get employee stats (total + active) first
+      // Get basic stats
       const statsRes = await axios.get(`${API_ENDPOINTS.EMPLOYEES}/stats`);
       const { totalEmployees, activeEmployees } = statsRes.data;
 
-      // Get a sample of employees (up to 3000) for department breakdown
-      const response = await axios.get(`${API_ENDPOINTS.EMPLOYEES}?limit=3000`);
-      const employees = response.data.employees;
+      // Get salary analytics (total salary)
+      const analyticsRes = await axios.get(`${API_ENDPOINTS.ANALYTICS}`);
+      const salaryStats = analyticsRes.data.data.salaryStats?.[0] || {};
+      const totalSalary = salaryStats.totalSalary || 0;
 
-      // Calculate total salary from the sampled employees (approximate)
-      const totalSalary = employees.reduce((sum, emp) => sum + emp.salary, 0);
+      // Get department counts
+      const deptRes = await axios.get(`${API_ENDPOINTS.EMPLOYEES}/department-counts`);
+      const deptCounts = deptRes.data.data;
 
-      // Robust department statistics using sampled employees
-      const ALL_DEPARTMENTS = [
-        "Engineering", "Marketing", "Sales", "HR", "Finance", "Operations", "Design", "Product"
-      ];
-      // Build a lookup for normalization
-      const deptLookup = {};
-      ALL_DEPARTMENTS.forEach(d => deptLookup[d.toLowerCase()] = d);
-      // Initialize counts
-      const deptCounts = {};
-      ALL_DEPARTMENTS.forEach(dept => { deptCounts[dept] = 0; });
-      let unknownCount = 0;
-      employees.forEach(emp => {
-        const raw = (emp.department || '').trim().toLowerCase();
-        if (deptLookup[raw]) {
-          deptCounts[deptLookup[raw]]++;
-        } else {
-          unknownCount++;
-        }
-      });
-      let departments = ALL_DEPARTMENTS
-        .map(dept => ({
-          name: dept,
-          count: deptCounts[dept],
-          percentage: employees.length ? Math.round((deptCounts[dept] / employees.length) * 100) : 0
-        }))
-        .filter(d => d.count > 0); // Only show departments with employees
-      if (unknownCount > 0) {
-        departments.push({
-          name: "Unknown",
-          count: unknownCount,
-          percentage: employees.length ? Math.round((unknownCount / employees.length) * 100) : 0
-        });
-      }
+      const departments = deptCounts.map(d => ({
+        name: d._id,
+        count: d.count,
+        percentage: totalEmployees ? Math.round((d.count / totalEmployees) * 100) : 0
+      }));
+
       setStats({
         totalEmployees,
         activeEmployees,
