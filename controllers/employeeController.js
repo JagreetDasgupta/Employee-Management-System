@@ -159,12 +159,13 @@ export const getAllEmployees = async (req, res) => {
         { email: { $regex: search, $options: 'i' } },
         { employeeId: { $regex: search, $options: 'i' } },
         { department: { $regex: search, $options: 'i' } },
-        { designation: { $regex: search, $options: 'i' } }
+        { designation: { $regex: search, $options: 'i' } },
+        { address: { $regex: search, $options: 'i' } }
       ];
     }
 
     // Validate and build sort object
-    const allowedSortFields = ['name', 'joiningDate', 'salary', 'createdAt', 'department', 'designation', 'email'];
+    const allowedSortFields = ['name', 'joiningDate', 'salary', 'createdAt', 'department', 'designation', 'email', 'address'];
     const allowedSortOrders = ['asc', 'desc'];
     
     if (!allowedSortFields.includes(sortBy)) {

@@ -28,6 +28,11 @@ const employeeSchema = new mongoose.Schema({
     trim: true,
     match: [/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number']
   },
+  address: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Address cannot exceed 500 characters']
+  },
   department: {
     type: String,
     required: [true, 'Department is required'],
