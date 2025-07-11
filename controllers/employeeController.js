@@ -24,8 +24,12 @@ const validateEmployeeData = (data) => {
     }
   }
   
-  if (!data.phone || data.phone.trim() === '') {
-    errors.push('Phone number is required');
+  // Phone is optional, but if provided, validate format
+  if (data.phone && data.phone.trim() !== '') {
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    if (!phoneRegex.test(data.phone.trim())) {
+      errors.push('Please enter a valid phone number');
+    }
   }
   
   if (!data.department || data.department.trim() === '') {
