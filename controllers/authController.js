@@ -41,7 +41,9 @@ export const register = async (req, res) => {
     const newUser = new User({
       username,
       password: hashedPassword,
-      role
+      role,
+      name: username.split('@')[0], // Use username as default name
+      email: username // Since username is email format
     });
 
     await newUser.save();
@@ -50,6 +52,8 @@ export const register = async (req, res) => {
     const userResponse = {
       id: newUser._id,
       username: newUser.username,
+      name: newUser.name,
+      email: newUser.email,
       role: newUser.role,
       createdAt: newUser.createdAt
     };
@@ -117,6 +121,8 @@ export const login = async (req, res) => {
     const userResponse = {
       id: user._id,
       username: user.username,
+      name: user.name,
+      email: user.email,
       role: user.role
     };
 

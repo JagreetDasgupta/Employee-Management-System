@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FaUser, FaEnvelope, FaShieldAlt, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
+import { API_ENDPOINTS } from '../config/api.js';
 
 const Profile = () => {
-  const { user, token, logout } = useAuth();
+  const { user, token, logout, updateProfile, changePassword } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -51,26 +52,22 @@ const Profile = () => {
         email: formData.email
       };
 
-      if (formData.newPassword) {
-        updateData.currentPassword = formData.currentPassword;
-        updateData.newPassword = formData.newPassword;
-      }
-
-      const response = await fetch('/api/auth/profile', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updateData)
-      });
-
-      if (response.ok) {
-        const updatedUser = await response.json();
+      // Handle profile update
+      const profileResult = await updateProfile(updateData);
+      
+      if (profileResult.success) {
+        // Handle password change if provided
+        if (formData.newPassword) {
+          const passwordResult = await changePassword(formData.currentPassword, formData.newPassword);
+          if (!passwordResult.success) {
+            setError(passwordResult.error);
+            setLoading(false);
+            return;
+          }
+        }
+        
         setSuccess('Profile updated successfully');
         setIsEditing(false);
-        // Update the user context with new data
-        // Note: You might need to add a method to update user data in AuthContext
         setFormData(prev => ({
           ...prev,
           currentPassword: '',
@@ -78,8 +75,7 @@ const Profile = () => {
           confirmPassword: ''
         }));
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Failed to update profile');
+        setError(profileResult.error);
       }
     } catch (error) {
       setError('Error updating profile');
