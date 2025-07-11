@@ -22,11 +22,11 @@ const Dashboard = () => {
     departments: []
   });
   const [loading, setLoading] = useState(true);
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [user]);
 
   const fetchDashboardData = async () => {
     try {
