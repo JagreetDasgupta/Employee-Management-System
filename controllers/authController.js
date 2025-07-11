@@ -55,6 +55,7 @@ export const register = async (req, res) => {
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
+      lastLogin: newUser.lastLogin,
       createdAt: newUser.createdAt
     };
 
@@ -104,6 +105,10 @@ export const login = async (req, res) => {
       });
     }
 
+    // Update last login time
+    user.lastLogin = new Date();
+    await user.save();
+
     // Generate JWT token
     const payload = {
       id: user._id,
@@ -123,7 +128,8 @@ export const login = async (req, res) => {
       username: user.username,
       name: user.name,
       email: user.email,
-      role: user.role
+      role: user.role,
+      lastLogin: user.lastLogin
     };
 
     res.status(200).json({

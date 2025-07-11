@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema({
       message: 'Status must be either active or inactive'
     },
     default: 'active'
+  },
+  lastLogin: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true

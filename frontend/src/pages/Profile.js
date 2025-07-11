@@ -108,6 +108,17 @@ const Profile = () => {
     });
   };
 
+  const formatLastLogin = (dateString) => {
+    if (!dateString) return 'Never logged in';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
@@ -205,7 +216,7 @@ const Profile = () => {
                       <FaEnvelope className="text-gray-400 w-5 h-5" />
                       <div>
                         <p className="text-sm text-gray-500">Last Login</p>
-                        <p className="text-gray-900">{formatDate(user?.lastLogin)}</p>
+                        <p className="text-gray-900">{formatLastLogin(user?.lastLogin)}</p>
                       </div>
                     </div>
                   </div>
