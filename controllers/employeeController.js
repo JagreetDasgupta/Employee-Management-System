@@ -572,22 +572,3 @@ export const getEmployeeAnalytics = async (req, res) => {
     });
   }
 }; 
-
-export const getDepartmentCounts = async (req, res) => {
-  try {
-    const counts = await Employee.aggregate([
-      {
-        $group: {
-          _id: '$department',
-          count: { $sum: 1 }
-        }
-      },
-      { $sort: { count: -1 } }
-    ]);
-
-    res.status(200).json({ success: true, data: counts });
-  } catch (error) {
-    console.error('Error getting department counts:', error);
-    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
-  }
-}; 

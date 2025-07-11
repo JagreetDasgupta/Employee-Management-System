@@ -6,8 +6,7 @@ import {
   updateEmployee,
   deleteEmployee,
   getEmployeeStats,
-  getEmployeeAnalytics,
-  getDepartmentCounts
+  getEmployeeAnalytics
 } from '../controllers/employeeController.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { requireAdmin, requireHR } from '../middleware/roleCheck.js';
@@ -28,9 +27,6 @@ router.get('/stats', getEmployeeStats);
 
 // GET /api/employees/analytics - Get advanced analytics (both roles)
 router.get('/analytics', getEmployeeAnalytics);
-
-// GET /api/employees/department-counts - Get department counts (both roles)
-router.get('/department-counts', getDepartmentCounts);
 
 // GET /api/employees/:id - Get single employee (both roles)
 router.get('/:id', getEmployeeById);

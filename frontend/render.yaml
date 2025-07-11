@@ -5,4 +5,8 @@ services:
     staticPublishPath: ./build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://employee-management-system-c5qp.onrender.com 
+        value: https://employee-management-system-c5qp.onrender.com
+    routes:
+      - type: rewrite
+        source: /.*
+        destination: /index.html 
