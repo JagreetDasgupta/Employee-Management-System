@@ -243,24 +243,26 @@ const Employees = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     ${employee.salary.toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
-                    <Link to={`/employees/${employee._id}`} className="text-blue-600 hover:text-blue-900" title="View">
-                      <FaEye />
-                    </Link>
-                    {isAdmin && (
-                      <>
-                        <Link to={`/employees/${employee._id}/edit`} className="text-green-600 hover:text-green-900" title="Edit">
-                          <FaEdit />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(employee._id)}
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete"
-                        >
-                          <FaTrash />
-                        </button>
-                      </>
-                    )}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex items-center justify-center gap-2">
+                      <Link to={`/employees/${employee._id}`} className="text-blue-600 hover:text-blue-900 flex items-center justify-center" title="View">
+                        <FaEye />
+                      </Link>
+                      {isAdmin && (
+                        <>
+                          <Link to={`/employees/${employee._id}/edit`} className="text-green-600 hover:text-green-900 flex items-center justify-center" title="Edit">
+                            <FaEdit />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(employee._id)}
+                            className="text-red-600 hover:text-red-900 flex items-center justify-center"
+                            title="Delete"
+                          >
+                            <FaTrash />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

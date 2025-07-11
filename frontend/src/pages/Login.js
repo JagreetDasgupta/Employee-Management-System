@@ -111,7 +111,8 @@ const Login = () => {
               Demo Credentials:
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              Username: admin_user | Password: password123
+              Admin: <b>admin@admin.com</b> | Password: <b>admin</b><br />
+              HR: <b>hr@hr.com</b> | Password: <b>hr</b>
             </p>
           </div>
         </form>
