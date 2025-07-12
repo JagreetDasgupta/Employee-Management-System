@@ -8,9 +8,7 @@ import {
   Menu, 
   X, 
   LogOut,
-  Plus,
-  Search,
-  Filter
+  Plus
 } from 'lucide-react';
 
 const Layout = ({ children }) => {

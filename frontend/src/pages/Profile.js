@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaUser, FaEnvelope, FaShieldAlt, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
-import { API_ENDPOINTS } from '../config/api.js';
 
 const Profile = () => {
-  const { user, token, logout, updateProfile, changePassword } = useAuth();
+  const { user, logout, updateProfile, changePassword } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

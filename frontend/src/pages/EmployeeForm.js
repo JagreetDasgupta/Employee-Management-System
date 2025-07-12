@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaSave, FaTimes, FaUser, FaEnvelope, FaBuilding, FaBriefcase, FaDollarSign, FaCalendar, FaPhone } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
@@ -45,13 +45,7 @@ const EmployeeForm = () => {
     'Product': ['Product Manager', 'Product Owner', 'Business Analyst', 'Product Analyst']
   };
 
-  useEffect(() => {
-    if (id) {
-      fetchEmployee();
-    }
-  }, [id]);
-
-  const fetchEmployee = async () => {
+  const fetchEmployee = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.EMPLOYEE_BY_ID(id), {
@@ -89,7 +83,13 @@ const EmployeeForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, token]);
+
+  useEffect(() => {
+    if (id) {
+      fetchEmployee();
+    }
+  }, [id, fetchEmployee]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

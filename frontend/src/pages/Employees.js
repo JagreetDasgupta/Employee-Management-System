@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaSearch, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaEdit, FaTrash, FaEye, FaDownload } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import { API_ENDPOINTS } from '../config/api.js';
 
@@ -10,15 +10,20 @@ const Employees = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filterDepartment, setFilterDepartment] = useState('');
+  const [filterPosition, setFilterPosition] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
-  const { token, isAdmin, user } = useAuth();
+  const { token, isAdmin } = useAuth();
   const searchTimeout = useRef();
 
   const departments = [
     'Engineering', 'Marketing', 'Sales', 'HR', 'Finance', 'Operations', 'Design', 'Product'
+  ];
+
+  const positions = [
+    '', 'Software Engineer', 'Senior Engineer', 'HR Specialist', 'Project Manager', 'Product Manager', 'Designer', 'Accountant', 'Sales Executive', 'Marketing Manager', 'Social Media Manager', 'Business Analyst', 'Operations Manager', 'Other'
   ];
 
   useEffect(() => {
@@ -29,12 +34,7 @@ const Employees = () => {
     return () => clearTimeout(searchTimeout.current);
   }, [searchTerm]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    fetchEmployees();
-  }, [currentPage, debouncedSearch, filterDepartment, sortBy, sortOrder]);
-
-  const fetchEmployees = async () => {
+  const fetchEmployees = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -42,6 +42,7 @@ const Employees = () => {
       params.append('limit', 10);
       if (debouncedSearch) params.append('search', debouncedSearch);
       if (filterDepartment) params.append('department', filterDepartment);
+      if (filterPosition) params.append('designation', filterPosition);
       params.append('sortBy', sortBy);
       params.append('sortOrder', sortOrder);
 
@@ -66,7 +67,11 @@ const Employees = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, debouncedSearch, filterDepartment, filterPosition, sortBy, sortOrder, token]);
+
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees]);
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
@@ -99,6 +104,35 @@ const Employees = () => {
     }
   };
 
+  // Export handler
+  const handleExport = async (format) => {
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearch) params.append('search', debouncedSearch);
+      if (filterDepartment) params.append('department', filterDepartment);
+      if (filterPosition) params.append('designation', filterPosition);
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder);
+      params.append('format', format);
+      const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const res = await fetch(`${apiBase}/api/employees/export?${params.toString()}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to export');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = format === 'csv' ? 'employees.csv' : 'employees.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Export failed: ' + err.message);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -111,14 +145,25 @@ const Employees = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Employees</h1>
-        {isAdmin && (
-          <Link
-            to="/employees/new"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-          >
-            <FaPlus /> Add Employee
-          </Link>
-        )}
+        <div className="flex gap-2">
+          <div className="relative group">
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+              <FaDownload /> Export <span className="ml-1">▼</span>
+            </button>
+            <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-10">
+              <button onClick={() => handleExport('csv')} className="block w-full text-left px-4 py-2 hover:bg-gray-100">CSV</button>
+              <button onClick={() => handleExport('json')} className="block w-full text-left px-4 py-2 hover:bg-gray-100">JSON</button>
+            </div>
+          </div>
+          {isAdmin && (
+            <Link
+              to="/employees/new"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            >
+              <FaPlus /> Add Employee
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Search and Filter */}
@@ -145,10 +190,21 @@ const Employees = () => {
               <option key={dept} value={dept}>{dept}</option>
             ))}
           </select>
+          <select
+            value={filterPosition}
+            onChange={(e) => setFilterPosition(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">All Positions</option>
+            {positions.filter(p => p).map(pos => (
+              <option key={pos} value={pos}>{pos}</option>
+            ))}
+          </select>
           <button
             onClick={() => {
               setSearchTerm('');
               setFilterDepartment('');
+              setFilterPosition('');
             }}
             className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
           >

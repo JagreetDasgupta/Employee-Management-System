@@ -32,8 +32,8 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await axios.get(API_ENDPOINTS.PROFILE);
-          setUser(response.data.data);
+          const { data } = await axios.get(API_ENDPOINTS.PROFILE);
+          setUser(data.data);
         } catch (error) {
           console.error('Auth check failed:', error);
           logout();
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (username, password, role) => {
     try {
-      const response = await axios.post(API_ENDPOINTS.REGISTER, {
+      await axios.post(API_ENDPOINTS.REGISTER, {
         username,
         password,
         role

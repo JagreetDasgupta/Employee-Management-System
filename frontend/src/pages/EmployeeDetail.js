@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FaEdit, FaTrash, FaArrowLeft, FaEnvelope, FaPhone, FaBuilding, FaBriefcase, FaDollarSign, FaCalendar, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,12 +12,7 @@ const EmployeeDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    fetchEmployee();
-  }, [id]);
-
-  const fetchEmployee = async () => {
+  const fetchEmployee = useCallback(async () => {
     try {
       setLoading(true);
       const url = API_ENDPOINTS.EMPLOYEE_BY_ID(id);
@@ -40,7 +35,11 @@ const EmployeeDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, token]);
+
+  useEffect(() => {
+    fetchEmployee();
+  }, [fetchEmployee]);
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this employee? This action cannot be undone.')) {

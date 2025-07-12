@@ -1,5 +1,6 @@
 import Employee from '../models/Employee.js';
 import { createAuditMiddleware } from '../middleware/audit.js';
+import { Parser as Json2csvParser } from 'json2csv';
 
 // Validation helper function
 const validateEmployeeData = (data) => {
@@ -159,7 +160,7 @@ export const getAllEmployees = async (req, res) => {
     // Search across multiple fields
     if (search) {
       filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
+        { name: { $regex: '^' + search, $options: 'i' } }, // starts with for name
         { email: { $regex: search, $options: 'i' } },
         { employeeId: { $regex: search, $options: 'i' } },
         { department: { $regex: search, $options: 'i' } },
@@ -568,6 +569,73 @@ export const getEmployeeAnalytics = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Internal server error',
+      error: error.message
+    });
+  }
+}; 
+
+// Export employees as CSV or JSON
+export const exportEmployees = async (req, res) => {
+  try {
+    const {
+      search,
+      department,
+      status,
+      designation,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      format = 'json'
+    } = req.query;
+
+    // Build filter object (same as getAllEmployees)
+    const filter = {};
+    if (department) filter.department = { $regex: department, $options: 'i' };
+    // Only apply status filter if status is set and not empty
+    if (status && status !== '') filter.status = status;
+    if (designation) filter.designation = { $regex: designation, $options: 'i' };
+    if (search) {
+      filter.$or = [
+        { name: { $regex: '^' + search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { employeeId: { $regex: search, $options: 'i' } },
+        { department: { $regex: search, $options: 'i' } },
+        { designation: { $regex: search, $options: 'i' } },
+        { address: { $regex: search, $options: 'i' } }
+      ];
+    }
+    const allowedSortFields = ['name', 'joiningDate', 'salary', 'createdAt', 'department', 'designation', 'email', 'address'];
+    const allowedSortOrders = ['asc', 'desc'];
+    const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+    const sortDir = allowedSortOrders.includes(sortOrder) ? (sortOrder === 'asc' ? 1 : -1) : -1;
+    const sortObject = {};
+    sortObject[sortField] = sortDir;
+
+    // Query employees with filters and sorting
+    const employees = await Employee.find(filter)
+      .select('-__v')
+      .sort(sortObject);
+
+    if (format === 'csv') {
+      const fields = [
+        'employeeId', 'name', 'email', 'phone', 'address',
+        'department', 'designation', 'joiningDate', 'salary', 'status', 'createdAt', 'updatedAt'
+      ];
+      const opts = { fields };
+      const parser = new Json2csvParser(opts);
+      const csv = parser.parse(employees.map(e => e.toObject()));
+      res.header('Content-Type', 'text/csv');
+      res.attachment('employees.csv');
+      return res.send(csv);
+    } else {
+      res.header('Content-Type', 'application/json');
+      res.attachment('employees.json');
+      return res.send(JSON.stringify(employees, null, 2));
+    }
+  } catch (error) {
+    console.error('Error exporting employees:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to export employees',
       error: error.message
     });
   }
