@@ -1,6 +1,7 @@
 # Employee Management System
 
 A full-stack employee management platform with authentication, role-based access, analytics, and audit logging.
+LIVE DEMO : https://employee-management-system-c5qp.onrender.com
 
 ---
 
