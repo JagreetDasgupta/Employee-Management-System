@@ -1,0 +1,7 @@
+{
+  "short_name": "EMS",
+  "name": "Employee Management System",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone"
+} 
